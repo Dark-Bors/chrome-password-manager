@@ -1,14 +1,37 @@
 {
-    "manifest_version": 3,
-    "name": "Password Manager",
-    "version": "0.1.0",
-    "description": "Securely store and manage passwords for websites.",
-    "permissions": ["storage"],
-    "action": {
-      "default_popup": "popup.html"
-    },
-    "background": {
-      "service_worker": "background.js"
+  "manifest_version": 3,
+  "name": "Password Manager",
+  "version": "0.2.0",
+  "description": "Securely store and autofill passwords.",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_title": "Password Manager",
+    "default_icon": {
+      "16": "icon.png",
+      "32": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
     }
-  }
-  
+  },
+
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["crypto.js", "autofill.js"],  
+      "run_at": "document_idle"
+    }
+  ]
+}
