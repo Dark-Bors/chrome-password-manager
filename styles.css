@@ -1,0 +1,29 @@
+body {
+    font-family: sans-serif;
+    padding: 10px;
+    width: 300px;
+    background-color: #1e1e1e;
+    color: #eee;
+  }
+  input {
+    width: 100%;
+    margin: 5px 0;
+    padding: 5px;
+    background: #2d2d2d;
+    color: white;
+    border: 1px solid #555;
+  }
+  button {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    background: #007acc;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  ul {
+    margin-top: 10px;
+    padding-left: 15px;
+  }
+  
