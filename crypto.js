@@ -41,3 +41,12 @@ async function encryptData(data, key) {
     return JSON.parse(new TextDecoder().decode(decrypted));
   }
   
+  async function encryptMasterKey(masterKey, pin) {
+    return encryptData({ masterKey }, pin);
+  }
+  
+  async function decryptMasterKey(encrypted, pin) {
+    const result = await decryptData(encrypted, pin);
+    return result.masterKey;
+  }
+  

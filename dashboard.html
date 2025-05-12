@@ -7,13 +7,21 @@
 <body>
   <h2>Password Manager</h2>
 
-  <div id="authSection">
+  <!-- PIN Unlock Section -->
+  <div id="pinSection" style="display: none;">
+    <input type="password" id="pin" placeholder="Enter 6-digit PIN">
+    <button id="pinUnlockBtn">Unlock with PIN</button>
+  </div>
+
+  <!-- Master Key Unlock Section -->
+  <div id="authSection" style="display: none;">
     <input type="password" id="masterKey" placeholder="Enter Master Key">
     <button id="loginBtn">Unlock</button>
   </div>
 
-  <div id="mainSection" style="display:none;">
-    <input type="text" id="site" placeholder="Site Name">
+  <!-- Main Dashboard Section -->
+  <div id="mainSection" style="display: none;">
+    <!-- <input type="text" id="site" placeholder="Site Name"> -->
     <input type="text" id="url" placeholder="URL">
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">

@@ -1,23 +1,64 @@
-chrome.runtime.sendMessage({ type: "getMasterKey" }, async (res) => {
-  const masterKey = res.key;
-  if (!masterKey) return;
+(async () => {
+  // Try to detect login input fields
+  const usernameField = document.querySelector(
+    'input[type="email"], input[type="text"][autocomplete*="user"], input[name*="user"], input[name*="email"]'
+  );
+  const passwordField = document.querySelector(
+    'input[type="password"]'
+  );
 
-  const siteKey = Object.keys(localStorage).find(k => window.location.href.includes(k)) || "Polarion";
+  if (!usernameField || !passwordField) {
+    console.log("[Autofill] No login fields found.");
+    return;
+  }
 
-  chrome.storage.local.get(siteKey, async (data) => {
-    if (!data[siteKey]) return;
-
-    try {
-      const decrypted = await decryptData(data[siteKey], masterKey);
-      const userInput = document.querySelector("input[type='text'], input[name*='user']");
-      const passInput = document.querySelector("input[type='password']");
-      if (userInput && passInput) {
-        userInput.value = decrypted.user;
-        passInput.value = decrypted.pass;
-        console.log("[Autofill] Credentials inserted.");
-      }
-    } catch (e) {
-      console.warn("[Autofill] Failed to decrypt credentials", e);
+  // Ask background for master key
+  chrome.runtime.sendMessage({ type: "getMasterKey" }, async (res) => {
+    const key = res.key;
+    if (!key) {
+      console.warn("[Autofill] No master key available.");
+      return;
     }
+
+    const hostname = window.location.hostname;
+
+    // Load stored encrypted credentials
+    chrome.storage.local.get([hostname], async (result) => {
+      const encrypted = result[hostname];
+      if (!encrypted) {
+        console.log(`[Autofill] No stored credentials for ${hostname}`);
+        return;
+      }
+
+      try {
+        const creds = await decryptData(encrypted, key);
+        usernameField.value = creds.user;
+        passwordField.value = creds.pass;
+        console.log("[Autofill] Credentials inserted.");
+      } catch (e) {
+        console.warn("[Autofill] Failed to decrypt credentials.", e);
+      }
+    });
   });
-});
+
+  // Optional: detect login submission and offer to save
+  document.addEventListener("submit", async (e) => {
+    const form = e.target;
+    const user = form.querySelector('input[type="email"], input[type="text"]')?.value;
+    const pass = form.querySelector('input[type="password"]')?.value;
+
+    if (user && pass) {
+      const save = confirm("Save updated login?");
+      if (save) {
+        chrome.runtime.sendMessage({
+          type: "saveCredential",
+          payload: {
+            site: window.location.hostname,
+            user,
+            pass
+          }
+        });
+      }
+    }
+  }, true);
+})();
